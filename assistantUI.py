@@ -1,9 +1,11 @@
 import customtkinter as ctk
 from model import Assistant
+import pyttsx3
 
 class AssistantUI(object):
     def __init__(self):
         self.assistant = Assistant()
+        self.tts_engine = pyttsx3.init() #initializez motorul pentru text to speech
         
     def create_ui(self):
         ctk.set_appearance_mode("dark")
@@ -57,6 +59,9 @@ class AssistantUI(object):
         self.send_button = ctk.CTkButton(self.input_frame, text='Send', command=self.send_message)
         self.send_button.pack(side='right', padx=10)
 
+        self.speak_button = ctk.CTkButton(self.input_frame, text="Speak", command=self.speak_response)
+        self.speak_button.pack(side="right", padx=10)
+
     def send_message(self):
         user_input = self.chat_input.get()
         if user_input:
@@ -78,6 +83,11 @@ class AssistantUI(object):
             self.chat_display.insert("end", f"Asistent: {response}\n\n")
             self.chat_input.delete(0,'end')
 
+            self.current_response = response
 
+    def speak_response(self):
+        if hasattr(self, 'current_response') and self.current_response:
+            self.tts_engine.say(self.current_response)
+            self.tts_engine.runAndWait()
 
 
